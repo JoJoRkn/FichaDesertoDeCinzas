@@ -10,7 +10,22 @@
   <div class="ficha">
     <!-- Campos no topo/esquerdo -->
     <input type="text" id="nome" placeholder="Nome do Personagem">
-    <input type="text" id="classe" placeholder="Classe">
+    
+    <!-- Campo Classe convertido para select com opções -->
+    <select id="classe">
+      <option value="">Selecione a Classe</option>
+      <option value="saqueador">Saqueador do Deserto</option>
+      <option value="psionico">Psiônico Aberrante</option>
+      <option value="motorista">Motorista Mentecapto</option>
+      <option value="tecnomago">Tecnomago Xamânico</option>
+      <option value="sobrevivente">Sobrevivente Primevo</option>
+      <option value="cultista">Cultista das Cinzas</option>
+      <option value="mutante">Mutante do Mundo Morto</option>
+      <option value="robo">Robô Livre</option>
+      <option value="alien">Alien Destituído</option>
+      <option value="catador">Catador Aflito</option>
+    </select>
+    
     <textarea id="caracteristicas" placeholder="Características de Classe"></textarea>
 
     <!-- Seções de Magias/Poderes (lado esquerdo, maiores) -->
@@ -39,8 +54,6 @@
     <!-- Caixa de armaduras -->
     <textarea id="armadurarightside" placeholder="Armaduras"></textarea>
 
-    <!-- Caixa extra para Chicletes Inferior -->
-    <input type="number" id="chicletesBottom" placeholder="Chicletes Inferior">
   </div>
   
   <!-- Botão para salvar a ficha -->
@@ -68,7 +81,6 @@
         equipamentos: document.getElementById('equipamentos').value,
         notas: document.getElementById('notas').value,
         armadurarightside: document.getElementById('armadurarightside').value,
-        chicletesBottom: document.getElementById('chicletesBottom').value
       };
 
       // Salva a ficha como string JSON no localStorage
@@ -98,7 +110,6 @@
         document.getElementById('equipamentos').value = ficha.equipamentos || '';
         document.getElementById('notas').value = ficha.notas || '';
         document.getElementById('armadurarightside').value = ficha.armadurarightside || '';
-        document.getElementById('chicletesBottom').value = ficha.chicletesBottom || '';
       }
     }
 

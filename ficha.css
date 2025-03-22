@@ -26,13 +26,14 @@ body {
    ---------------------------- */
 #nome {
   position: absolute;
-  top: 30px;   /* Ajuste conforme a arte */
-  left: 150px; /* Ajuste conforme a arte */
+  top: 30px;
+  left: 150px;
   width: 250px;
   height: 28px;
   background-color: rgba(255,255,255,0.7);
 }
 
+/* Campo classe (select) */
 #classe {
   position: absolute;
   top: 124px;
@@ -42,6 +43,7 @@ body {
   background-color: rgba(255,255,255,0.7);
 }
 
+/* Outras regras permanecem as mesmas... */
 #caracteristicas {
   position: absolute;
   top: 258px;
@@ -54,7 +56,6 @@ body {
 
 /* ----------------------------
    MAGIAS / PSÍQUICOS / MUTAÇÕES
-   (LADO ESQUERDO, CAMPOS MAIORES)
    ---------------------------- */
 #magicos {
   position: absolute;
@@ -203,14 +204,3 @@ body {
   background-color: rgba(255,255,255,0.7);
 }
 
-/* ----------------------------
-   CAIXINHA EXTRA DE CHICLETES (INFERIOR)
-   ---------------------------- */
-#chicletesBottom {
-  position: absolute;
-  top: 980px;
-  left: 750px;
-  width: 60px;
-  height: 25px;
-  background-color: rgba(255,255,255,0.7);
-}
