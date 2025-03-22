@@ -62,6 +62,7 @@
   <!-- Botões -->
   <button onclick="salvarFicha()">Salvar Ficha</button>
   <button onclick="gerarFichaAleatoria()">Ficha Aleatória</button>
+  <button onclick="limparFicha()">Limpar Ficha</button>
   
   <!-- Script para LocalStorage, atualização automática e geração aleatória -->
   <script>
@@ -118,7 +119,7 @@
       "catador": { dice: 3, sides: 6 }
     };
 
-    // Novos mapeamentos para descrições
+    // Mapeamentos para descrições
     const weaponDescriptions = {
       "saqueador": [
         "Revólver enferrujado",
@@ -340,7 +341,7 @@
       ]
     };
 
-    // Funções para rolagem de dados
+    // Funções de rolagem
     function rollDie(sides) {
       return Math.floor(Math.random() * sides) + 1;
     }
@@ -423,8 +424,9 @@
       }
     });
 
-    // Função para salvar a ficha
+    // Função para salvar a ficha com confirmação
     function salvarFicha() {
+      if (!confirm("Deseja salvar a ficha?")) return;
       const ficha = {
         nome: document.getElementById('nome').value,
         classe: document.getElementById('classe').value,
@@ -446,10 +448,48 @@
       };
 
       localStorage.setItem('fichaData', JSON.stringify(ficha));
-      alert('Ficha salva com sucesso!');
+      alert("Ficha salva com sucesso!");
     }
 
-    // Função para carregar a ficha salva (se houver)
+    // Função para gerar uma ficha aleatória com confirmação
+    function gerarFichaAleatoria() {
+      if (!confirm("Deseja gerar uma ficha aleatória?")) return;
+      const classes = ["saqueador", "psionico", "motorista", "tecnomago", "sobrevivente", "cultista", "mutante", "robo", "alien", "catador"];
+      const classeAleatoria = classes[Math.floor(Math.random() * classes.length)];
+      updateFichaPorClasse(classeAleatoria);
+      if (!document.getElementById('nome').value) {
+        document.getElementById('nome').value = "Personagem Aleatório";
+      }
+      alert("Ficha aleatória gerada!");
+    }
+
+    // Função para limpar a ficha com confirmação
+    function limparFicha() {
+      if (!confirm("Deseja limpar a ficha?")) return;
+      // Limpa todos os campos
+      document.getElementById('nome').value = "";
+      document.getElementById('classe').value = "";
+      document.getElementById('caracteristicas').value = "";
+      document.getElementById('magicos').value = "";
+      document.getElementById('psiquicos').value = "";
+      document.getElementById('mutacoes').value = "";
+      document.getElementById('forca').value = "";
+      document.getElementById('agilidade').value = "";
+      document.getElementById('presenca').value = "";
+      document.getElementById('resistencia').value = "";
+      document.getElementById('vontade').value = "";
+      document.getElementById('pv').value = "";
+      document.getElementById('chicletes').value = "";
+      document.getElementById('armas').value = "";
+      document.getElementById('equipamentos').value = "";
+      document.getElementById('notas').value = "";
+      document.getElementById('armadurarightside').value = "";
+      document.getElementById('chicletesBottom').value = "";
+      localStorage.removeItem('fichaData');
+      alert("Ficha limpa com sucesso!");
+    }
+
+    // Carrega a ficha salva (se houver) ao carregar a página
     function carregarFicha() {
       const fichaSalva = localStorage.getItem('fichaData');
       if (fichaSalva) {
@@ -472,18 +512,6 @@
         document.getElementById('notas').value = ficha.notas || '';
         document.getElementById('armadurarightside').value = ficha.armadurarightside || '';
       }
-    }
-
-    // Função para gerar uma ficha aleatória (escolhe uma classe aleatoriamente e atualiza a ficha)
-    function gerarFichaAleatoria() {
-      const classes = ["saqueador", "psionico", "motorista", "tecnomago", "sobrevivente", "cultista", "mutante", "robo", "alien", "catador"];
-      const classeAleatoria = classes[Math.floor(Math.random() * classes.length)];
-      updateFichaPorClasse(classeAleatoria);
-      // Se o nome estiver vazio, define um nome padrão
-      if (!document.getElementById('nome').value) {
-        document.getElementById('nome').value = "Personagem Aleatório";
-      }
-      alert("Ficha aleatória gerada!");
     }
 
     window.onload = carregarFicha;
