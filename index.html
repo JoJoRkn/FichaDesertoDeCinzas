@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ficha de Personagem - Deserto de Cinzas</title>
+  <link rel="stylesheet" href="ficha.css">
+</head>
+<body>
+  <div class="ficha">
+    <!-- Campos no topo/esquerdo -->
+    <input type="text" id="nome" placeholder="Nome do Personagem">
+    <input type="text" id="classe" placeholder="Classe">
+    <textarea id="caracteristicas" placeholder="Características de Classe"></textarea>
+
+    <!-- Seções de Magias/Poderes (lado esquerdo, maiores) -->
+    <textarea id="magicos" placeholder="Mágicos"></textarea>
+    <textarea id="psiquicos" placeholder="Psíquicos"></textarea>
+    <textarea id="mutacoes" placeholder="Mutações"></textarea>
+
+    <!-- Atributos (centro) -->
+    <input type="number" id="forca" placeholder="Força">
+    <input type="number" id="agilidade" placeholder="Agilidade">
+    <input type="number" id="presenca" placeholder="Presença">
+    <input type="number" id="resistencia" placeholder="Resistência">
+    <input type="number" id="vontade" placeholder="Vontade">
+
+    <!-- PV e Chicletes (centro) -->
+    <input type="number" id="pv" placeholder="PV">
+    <input type="number" id="chicletes" placeholder="Chicletes">
+
+    <!-- Armas e Equipamentos (topo/direita) -->
+    <textarea id="armas" placeholder="Armas"></textarea>
+    <textarea id="equipamentos" placeholder="Equipamentos"></textarea>
+
+    <!-- Notas / Histórico (inferior/esquerdo) -->
+    <textarea id="notas" placeholder="Notas / Histórico"></textarea>
+
+    <!-- Caixa de armaduras -->
+    <textarea id="armadurarightside" placeholder="Armaduras"></textarea>
+
+    <!-- Caixa extra para Chicletes Inferior -->
+    <input type="number" id="chicletesBottom" placeholder="Chicletes Inferior">
+  </div>
+  
+  <!-- Botão para salvar a ficha -->
+  <button onclick="salvarFicha()">Salvar Ficha</button>
+  
+  <!-- Script de LocalStorage -->
+  <script>
+    // Função para salvar os dados da ficha
+    function salvarFicha() {
+      const ficha = {
+        nome: document.getElementById('nome').value,
+        classe: document.getElementById('classe').value,
+        caracteristicas: document.getElementById('caracteristicas').value,
+        magicos: document.getElementById('magicos').value,
+        psiquicos: document.getElementById('psiquicos').value,
+        mutacoes: document.getElementById('mutacoes').value,
+        forca: document.getElementById('forca').value,
+        agilidade: document.getElementById('agilidade').value,
+        presenca: document.getElementById('presenca').value,
+        resistencia: document.getElementById('resistencia').value,
+        vontade: document.getElementById('vontade').value,
+        pv: document.getElementById('pv').value,
+        chicletes: document.getElementById('chicletes').value,
+        armas: document.getElementById('armas').value,
+        equipamentos: document.getElementById('equipamentos').value,
+        notas: document.getElementById('notas').value,
+        armadurarightside: document.getElementById('armadurarightside').value,
+        chicletesBottom: document.getElementById('chicletesBottom').value
+      };
+
+      // Salva a ficha como string JSON no localStorage
+      localStorage.setItem('fichaData', JSON.stringify(ficha));
+      alert('Ficha salva com sucesso!');
+    }
+
+    // Função para carregar os dados salvos (se houver)
+    function carregarFicha() {
+      const fichaSalva = localStorage.getItem('fichaData');
+      if (fichaSalva) {
+        const ficha = JSON.parse(fichaSalva);
+        document.getElementById('nome').value = ficha.nome || '';
+        document.getElementById('classe').value = ficha.classe || '';
+        document.getElementById('caracteristicas').value = ficha.caracteristicas || '';
+        document.getElementById('magicos').value = ficha.magicos || '';
+        document.getElementById('psiquicos').value = ficha.psiquicos || '';
+        document.getElementById('mutacoes').value = ficha.mutacoes || '';
+        document.getElementById('forca').value = ficha.forca || '';
+        document.getElementById('agilidade').value = ficha.agilidade || '';
+        document.getElementById('presenca').value = ficha.presenca || '';
+        document.getElementById('resistencia').value = ficha.resistencia || '';
+        document.getElementById('vontade').value = ficha.vontade || '';
+        document.getElementById('pv').value = ficha.pv || '';
+        document.getElementById('chicletes').value = ficha.chicletes || '';
+        document.getElementById('armas').value = ficha.armas || '';
+        document.getElementById('equipamentos').value = ficha.equipamentos || '';
+        document.getElementById('notas').value = ficha.notas || '';
+        document.getElementById('armadurarightside').value = ficha.armadurarightside || '';
+        document.getElementById('chicletesBottom').value = ficha.chicletesBottom || '';
+      }
+    }
+
+    // Carrega os dados salvos quando a página for carregada
+    window.onload = carregarFicha;
+  </script>
+</body>
+</html>
