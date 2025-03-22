@@ -11,7 +11,7 @@
     <!-- Campos no topo/esquerdo -->
     <input type="text" id="nome" placeholder="Nome do Personagem">
     
-    <!-- Campo Classe convertido para select com opções -->
+    <!-- Campo Classe (select com opções) -->
     <select id="classe">
       <option value="">Selecione a Classe</option>
       <option value="saqueador">Saqueador do Deserto</option>
@@ -26,9 +26,10 @@
       <option value="catador">Catador Aflito</option>
     </select>
     
+    <!-- Caixa para exibir automaticamente as características da classe selecionada -->
     <textarea id="caracteristicas" placeholder="Características de Classe"></textarea>
 
-    <!-- Seções de Magias/Poderes (lado esquerdo, maiores) -->
+    <!-- Seções de Magias/Poderes (lado esquerdo) -->
     <textarea id="magicos" placeholder="Mágicos"></textarea>
     <textarea id="psiquicos" placeholder="Psíquicos"></textarea>
     <textarea id="mutacoes" placeholder="Mutações"></textarea>
@@ -51,17 +52,43 @@
     <!-- Notas / Histórico (inferior/esquerdo) -->
     <textarea id="notas" placeholder="Notas / Histórico"></textarea>
 
-    <!-- Caixa de armaduras -->
+    <!-- Caixa de Armaduras (lado direito) -->
     <textarea id="armadurarightside" placeholder="Armaduras"></textarea>
 
+    <!-- Caixa extra para Chicletes Inferior -->
+    <input type="number" id="chicletesBottom" placeholder="Chicletes Inferior">
   </div>
   
   <!-- Botão para salvar a ficha -->
   <button onclick="salvarFicha()">Salvar Ficha</button>
   
-  <!-- Script de LocalStorage -->
+  <!-- Script para LocalStorage e atualização automática das informações da classe -->
   <script>
-    // Função para salvar os dados da ficha
+    // Objeto contendo as informações de cada classe
+    const classDetails = {
+      "saqueador": "Saqueador do Deserto:\nModificadores: +1 Força, +1 Presença, -2 Vontade\nPV Resistência: +1d12\nSorte: 1d3\nBônus: Pode causar +1 de dano em troca de perder 1 ponto de condição na arma. Não pode aprender magias ou poderes psiônicos.",
+      "psionico": "Psiônico Aberrante:\nModificadores: +2 Vontade, -1 Força, -1 Resistência\nPV Resistência: +d4\nSorte: 1d2\nPermite o uso de poderes psíquicos com armaduras leves ou médias.",
+      "motorista": "Motorista Mentecapto:\nModificadores: +1 Agilidade, +1 Presença, -1 Força, -1 Resistência\nPV Resistência: +d8\nSorte: 1d3\nTodos os testes de pilotagem têm ND -2.",
+      "tecnomago": "Tecnomago Xamânico:\nModificadores: +2 Vontade, -1 Resistência, -1 Força\nPV Resistência: +d4\nSorte: 1d2\nPode usar poderes mágicos com armaduras leves ou médias.",
+      "sobrevivente": "Sobrevivente Primevo:\nModificadores: +1 Resistência, -1 Vontade\nPV Resistência: +d10\nSorte: 1d3\nIncapaz de aprender magias.",
+      "cultista": "Cultista das Cinzas:\nModificadores: +1 Presença, +1 Vontade, -1 Força, -1 Agilidade\nPV Resistência: +d6\nSorte: 1d2\nPode usar 'Vácuo' sem sofrer vício.",
+      "mutante": "Mutante do Mundo Morto:\nModificadores: +2 Resistência, -1 Vontade, -1 Agilidade\nPV Resistência: +d8\nSorte: 1d2\nPermite rolar mutações (inclusive estéticas) sem penalidades.",
+      "robo": "Robô Livre:\nModificadores: +1 Resistência, +1 Força, +1 Presença, -2 Vontade, -1 Agilidade\nPV Resistência: +d12\nSorte: 1d2\nPossui armadura natural; não pode usar magias, adquirir mutações ou poderes psiônicos.",
+      "alien": "Alien Destituído:\nModificadores: +1 Presença, +1 Vontade, -1 Resistência, -1 Força\nPV Resistência: +d8\nSorte: 1d2\nTestes para resistir a efeitos mentais/mágicos têm ND -2.",
+      "catador": "Catador Aflito:\nModificadores: +2 Agilidade, -1 Força, -1 Resistência\nPV Resistência: +d8\nSorte: 1d2\nVerificação especial para armas/armaduras (usa 1d8) e espaço extra para carga."
+    };
+
+    // Atualiza o campo de características com base na classe selecionada
+    document.getElementById('classe').addEventListener('change', function() {
+      var selected = this.value;
+      if (selected && classDetails[selected]) {
+        document.getElementById('caracteristicas').value = classDetails[selected];
+      } else {
+        document.getElementById('caracteristicas').value = "";
+      }
+    });
+
+    // Função para salvar os dados da ficha no LocalStorage
     function salvarFicha() {
       const ficha = {
         nome: document.getElementById('nome').value,
@@ -83,7 +110,6 @@
         armadurarightside: document.getElementById('armadurarightside').value,
       };
 
-      // Salva a ficha como string JSON no localStorage
       localStorage.setItem('fichaData', JSON.stringify(ficha));
       alert('Ficha salva com sucesso!');
     }
@@ -113,7 +139,7 @@
       }
     }
 
-    // Carrega os dados salvos quando a página for carregada
+    // Carrega os dados salvos ao carregar a página
     window.onload = carregarFicha;
   </script>
 </body>
