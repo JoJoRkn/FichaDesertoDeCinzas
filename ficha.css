@@ -17,7 +17,7 @@ body {
   height: 1131px;
   margin: 20px auto;
   position: relative;
-  background: url("Deserto\ de\ Cinzas_Ficha.jpeg") no-repeat center center;
+  background: url("Deserto de Cinzas_Ficha.jpeg") no-repeat center center;
   background-size: cover;
 }
 
@@ -202,5 +202,22 @@ body {
   width: 303px;
   height: 136px;
   background-color: rgba(255,255,255,0.7);
+}
 
+/* ----------------------------
+   ESTILIZAÇÃO DOS BOTÕES
+   ---------------------------- */
+button {
+  margin: 10px;
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: rgba(255,255,255,0.7);
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: rgba(255,255,255,0.9);
 }

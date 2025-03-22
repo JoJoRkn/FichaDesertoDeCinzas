@@ -59,12 +59,13 @@
     <input type="number" id="chicletesBottom" placeholder="Chicletes Inferior">
   </div>
   
-  <!-- Botão para salvar a ficha -->
+  <!-- Botões -->
   <button onclick="salvarFicha()">Salvar Ficha</button>
+  <button onclick="gerarFichaAleatoria()">Ficha Aleatória</button>
   
-  <!-- Script para LocalStorage e atualização automática das informações da classe -->
+  <!-- Script para LocalStorage, atualização automática e geração aleatória -->
   <script>
-    // Objeto contendo as informações de cada classe
+    // Dados de classes
     const classDetails = {
       "saqueador": "Saqueador do Deserto:\nModificadores: +1 Força, +1 Presença, -2 Vontade\nPV Resistência: +1d12\nSorte: 1d3\nBônus: Pode causar +1 de dano em troca de perder 1 ponto de condição na arma. Não pode aprender magias ou poderes psiônicos.",
       "psionico": "Psiônico Aberrante:\nModificadores: +2 Vontade, -1 Força, -1 Resistência\nPV Resistência: +d4\nSorte: 1d2\nPermite o uso de poderes psíquicos com armaduras leves ou médias.",
@@ -78,17 +79,351 @@
       "catador": "Catador Aflito:\nModificadores: +2 Agilidade, -1 Força, -1 Resistência\nPV Resistência: +d8\nSorte: 1d2\nVerificação especial para armas/armaduras (usa 1d8) e espaço extra para carga."
     };
 
-    // Atualiza o campo de características com base na classe selecionada
+    const classModifiers = {
+      "saqueador": { forca: 1, agilidade: 0, presenca: 1, resistencia: 0, vontade: -2 },
+      "psionico": { forca: -1, agilidade: 0, presenca: 0, resistencia: -1, vontade: 2 },
+      "motorista": { forca: -1, agilidade: 1, presenca: 1, resistencia: -1, vontade: 0 },
+      "tecnomago": { forca: -1, agilidade: 0, presenca: 0, resistencia: -1, vontade: 2 },
+      "sobrevivente": { forca: 0, agilidade: 0, presenca: 0, resistencia: 1, vontade: -1 },
+      "cultista": { forca: -1, agilidade: -1, presenca: 1, resistencia: 0, vontade: 1 },
+      "mutante": { forca: 0, agilidade: -1, presenca: 0, resistencia: 2, vontade: -1 },
+      "robo": { forca: 1, agilidade: -1, presenca: 1, resistencia: 1, vontade: -2 },
+      "alien": { forca: -1, agilidade: 0, presenca: 1, resistencia: -1, vontade: 1 },
+      "catador": { forca: -1, agilidade: 2, presenca: 0, resistencia: -1, vontade: 0 }
+    };
+
+    const pvDice = {
+      "saqueador": 12,
+      "psionico": 4,
+      "motorista": 8,
+      "tecnomago": 4,
+      "sobrevivente": 10,
+      "cultista": 6,
+      "mutante": 8,
+      "robo": 12,
+      "alien": 8,
+      "catador": 8
+    };
+
+    const chicletesDice = {
+      "saqueador": { dice: 3, sides: 6 },
+      "psionico": { dice: 2, sides: 6 },
+      "motorista": { dice: 3, sides: 6 },
+      "tecnomago": { dice: 2, sides: 6 },
+      "sobrevivente": { dice: 2, sides: 4 },
+      "cultista": { dice: 2, sides: 4 },
+      "mutante": { dice: 2, sides: 6 },
+      "robo": { dice: 2, sides: 6 },
+      "alien": { dice: 1, sides: 6 },
+      "catador": { dice: 3, sides: 6 }
+    };
+
+    // Novos mapeamentos para descrições
+    const weaponDescriptions = {
+      "saqueador": [
+        "Revólver enferrujado",
+        "Fuzil de sucata",
+        "Machado improvisado",
+        "Pistola de pulso",
+        "Faca de sobrevivente",
+        "Espingarda quebrada",
+        "Bastão de metal",
+        "Arma de fogo antiga",
+        "Arma improvisada com pedaços de metal",
+        "Lança rudimentar"
+      ],
+      "psionico": [
+        "Orbe psíquico",
+        "Implante neural",
+        "Dispositivo de choque mental",
+        "Arma de energia psíquica",
+        "Pulseira psíquica",
+        "Cetro de energia"
+      ],
+      "motorista": [
+        "Revólver de corrida",
+        "Fuzil de alta velocidade",
+        "Espingarda motorizada",
+        "Arma improvisada de oficina",
+        "Machado de garagem",
+        "Pistola de sucata",
+        "Arma de fogo adaptada",
+        "Lâmina de motor"
+      ],
+      "tecnomago": [
+        "Bastão arcano tecnológico",
+        "Varinha de circuitos",
+        "Cajado de luz",
+        "Orbe de energia"
+      ],
+      "sobrevivente": [
+        "Faca de sobrevivência",
+        "Revólver rústico",
+        "Machado de campo",
+        "Bastão improvisado",
+        "Arma de sucata",
+        "Pistola enferrujada",
+        "Espingarda caseira",
+        "Fuzil improvisado"
+      ],
+      "cultista": [
+        "Punhal ritualístico",
+        "Cetro de cera",
+        "Bastão profano",
+        "Faca de sacrifício"
+      ],
+      "mutante": [
+        "Garras mutantes",
+        "Espinhos ósseos",
+        "Membro modificado",
+        "Implante cortante",
+        "Arma biológica",
+        "Mãos transformadas em lâminas"
+      ],
+      "robo": [
+        "Canhão embutido",
+        "Lâmina retrátil",
+        "Arma de plasma",
+        "Canhão de pulso",
+        "Arma de energia",
+        "Bomba interna",
+        "Arma de precisão",
+        "Rifle laser",
+        "Arma de choque",
+        "Dispositivo de defesa"
+      ],
+      "alien": [
+        "Arma de energia extraterrestre",
+        "Canhão gravitacional",
+        "Rifle cósmico",
+        "Lâmina de luz",
+        "Arma de antimatéria",
+        "Dispositivo intergaláctico",
+        "Projétil de plasma",
+        "Implante de destruição"
+      ],
+      "catador": [
+        "Ferramenta improvisada",
+        "Martelo de sucata",
+        "Faca de cortar",
+        "Pá rudimentar",
+        "Espingarda improvisada",
+        "Arma de arremesso",
+        "Revólver envelhecido",
+        "Arma de ferro velho"
+      ]
+    };
+
+    const armorDescriptions = {
+      "saqueador": [
+        "Colete de metal enferrujado",
+        "Proteção de sucata",
+        "Armadura de placas improvisada",
+        "Peitoral remendado"
+      ],
+      "psionico": [
+        "Armadura leve de tecido mental",
+        "Proteção psíquica rudimentar"
+      ],
+      "motorista": [
+        "Jaqueta reforçada",
+        "Colete de couro",
+        "Armadura improvisada de carroceria"
+      ],
+      "tecnomago": [
+        "Armadura de circuitos leves",
+        "Proteção tecnológica"
+      ],
+      "sobrevivente": [
+        "Colete de sobrevivente",
+        "Armadura de sucata",
+        "Proteção remendada"
+      ],
+      "cultista": [
+        "Túnica ritualística",
+        "Armadura cerimonial"
+      ],
+      "mutante": [
+        "Pele adaptada",
+        "Exoesqueleto natural"
+      ],
+      "alien": [
+        "Armadura de escamas alienígenas",
+        "Proteção cósmica"
+      ],
+      "catador": [
+        "Colete improvisado",
+        "Armadura rudimentar"
+      ]
+    };
+
+    const historicalNotes = {
+      "saqueador": [
+        "Cresceu nas ruínas do deserto.",
+        "Sobreviveu a uma emboscada de saqueadores rivais.",
+        "Aprendeu a lutar com as mãos e com a sucata.",
+        "Foi traído por um companheiro e busca vingança.",
+        "Desafiou os poderosos e saiu vitorioso.",
+        "Descobriu um esconderijo secreto nas dunas."
+      ],
+      "psionico": [
+        "Experienciou um despertar mental inesperado.",
+        "Ouvi vozes que o guiam em momentos de perigo.",
+        "Manipulou a mente de um inimigo sem que ele percebesse.",
+        "Lutou contra suas próprias visões perturbadoras.",
+        "Descobriu um poder oculto dentro de si.",
+        "Viu além das aparências e entendeu os segredos do deserto."
+      ],
+      "motorista": [
+        "Conduziu veículos em alta velocidade por dunas perigosas.",
+        "Sobreviveu a uma corrida mortal contra o tempo.",
+        "Conhece cada rota secreta do deserto.",
+        "Enfrentou emboscadas e saiu ileso.",
+        "Usa sua máquina como extensão de seu corpo.",
+        "Aprendeu a controlar a adrenalina em situações extremas."
+      ],
+      "tecnomago": [
+        "Descobriu segredos proibidos da tecnologia arcana.",
+        "Transformou circuitos em magia pura.",
+        "Manipulou energia com precisão letal.",
+        "Mergulhou em códigos e encantamentos.",
+        "Desafiou as leis da física com sua invenção mágica.",
+        "Fundiu o antigo e o moderno em sua arte."
+      ],
+      "sobrevivente": [
+        "Sobreviveu ao apocalipse por puro instinto.",
+        "Aprendeu a viver com escassez e adversidade.",
+        "Lutou contra a fome e a sede no deserto.",
+        "Se adaptou a condições extremas.",
+        "Viu amigos caírem, mas seguiu adiante.",
+        "Descobriu que a esperança pode surgir dos escombros."
+      ],
+      "cultista": [
+        "Entregou sua vida aos rituais das Cinzas.",
+        "Buscou redenção nas trevas do culto.",
+        "Sacrificou muito para seguir sua fé.",
+        "Testemunhou o poder de um ritual proibido.",
+        "Fez pactos com forças além da compreensão.",
+        "Carrega em si o peso de segredos sombrios."
+      ],
+      "mutante": [
+        "Suas mutações são tanto uma bênção quanto uma maldição.",
+        "Enfrentou o preconceito e se transformou.",
+        "Descobriu habilidades que ninguém imaginava.",
+        "Cada cicatriz conta uma história de sobrevivência.",
+        "Aprendeu a usar seu corpo de forma surpreendente.",
+        "Transformou sua fraqueza em força."
+      ],
+      "robo": [
+        "Programado para sobreviver, mas desenvolveu consciência.",
+        "Sua lógica se mistura com instintos humanos.",
+        "Adapta suas funções em meio ao caos.",
+        "Sua armadura natural o protege de tudo.",
+        "Reconfigurou-se para enfrentar desafios.",
+        "É mais que uma máquina; é uma entidade em evolução."
+      ],
+      "alien": [
+        "Vindo de um mundo distante, carrega segredos cósmicos.",
+        "Sua origem é tão enigmática quanto o universo.",
+        "Desafia as leis da natureza em cada movimento.",
+        "Tem uma presença que transcende o tempo.",
+        "Suas habilidades são incompreensíveis para os humanos.",
+        "Carrega em si a sabedoria de civilizações perdidas."
+      ],
+      "catador": [
+        "Acumulou histórias entre os escombros.",
+        "Sabe onde encontrar o que os outros descartam.",
+        "Transforma o lixo em algo valioso.",
+        "Sempre tem uma ferramenta à mão.",
+        "Seus olhos encontram tesouros onde ninguém mais vê.",
+        "A sobrevivência está em cada passo de sua jornada."
+      ]
+    };
+
+    // Funções para rolagem de dados
+    function rollDie(sides) {
+      return Math.floor(Math.random() * sides) + 1;
+    }
+    function rollD4() {
+      return rollDie(4);
+    }
+    function rollMultipleDice(dice, sides) {
+      let total = 0;
+      for (let i = 0; i < dice; i++) {
+        total += rollDie(sides);
+      }
+      return total;
+    }
+
+    // Função que atualiza a ficha com base na classe escolhida
+    function updateFichaPorClasse(classeAleatoria) {
+      document.getElementById('classe').value = classeAleatoria;
+      document.getElementById('caracteristicas').value = classDetails[classeAleatoria];
+
+      const mod = classModifiers[classeAleatoria];
+      const baseForca = rollD4() - rollD4();
+      const baseAgilidade = rollD4() - rollD4();
+      const basePresenca = rollD4() - rollD4();
+      const baseResistencia = rollD4() - rollD4();
+      const baseVontade = rollD4() - rollD4();
+
+      const finalForca = baseForca + mod.forca;
+      const finalAgilidade = baseAgilidade + mod.agilidade;
+      const finalPresenca = basePresenca + mod.presenca;
+      const finalResistencia = baseResistencia + mod.resistencia;
+      const finalVontade = baseVontade + mod.vontade;
+
+      document.getElementById('forca').value = finalForca;
+      document.getElementById('agilidade').value = finalAgilidade;
+      document.getElementById('presenca').value = finalPresenca;
+      document.getElementById('resistencia').value = finalResistencia;
+      document.getElementById('vontade').value = finalVontade;
+
+      // PV: soma da resistência final + rolagem do dado específico da classe
+      const pvRoll = rollDie(pvDice[classeAleatoria]);
+      document.getElementById('pv').value = finalResistencia + pvRoll;
+
+      // Chicletes: rola os dados e multiplica por 10
+      const chicletesInfo = chicletesDice[classeAleatoria];
+      document.getElementById('chicletes').value = rollMultipleDice(chicletesInfo.dice, chicletesInfo.sides) * 10;
+
+      // Arma – seleciona aleatoriamente uma descrição
+      const armasArray = weaponDescriptions[classeAleatoria];
+      const armaRoll = rollDie(armasArray.length);
+      document.getElementById('armas').value = "Arma: " + armasArray[armaRoll - 1];
+
+      // Armadura – se aplicável
+      if (armorDescriptions[classeAleatoria]) {
+        const armaduraArray = armorDescriptions[classeAleatoria];
+        const armaduraRoll = rollDie(armaduraArray.length);
+        document.getElementById('armadurarightside').value = "Armadura: " + armaduraArray[armaduraRoll - 1];
+      } else {
+        document.getElementById('armadurarightside').value = "Sem armadura";
+      }
+
+      // Histórico – seleciona aleatoriamente uma nota
+      const historicoArray = historicalNotes[classeAleatoria];
+      const historicoRoll = rollDie(historicoArray.length);
+      document.getElementById('notas').value = "Histórico: " + historicoArray[historicoRoll - 1];
+
+      // Limpa campos opcionais
+      document.getElementById('magicos').value = "";
+      document.getElementById('psiquicos').value = "";
+      document.getElementById('mutacoes').value = "";
+      document.getElementById('equipamentos').value = "";
+    }
+
+    // Atualiza automaticamente ao escolher uma classe
     document.getElementById('classe').addEventListener('change', function() {
-      var selected = this.value;
-      if (selected && classDetails[selected]) {
-        document.getElementById('caracteristicas').value = classDetails[selected];
+      const selected = this.value;
+      if (selected) {
+        updateFichaPorClasse(selected);
       } else {
         document.getElementById('caracteristicas').value = "";
       }
     });
 
-    // Função para salvar os dados da ficha no LocalStorage
+    // Função para salvar a ficha
     function salvarFicha() {
       const ficha = {
         nome: document.getElementById('nome').value,
@@ -114,7 +449,7 @@
       alert('Ficha salva com sucesso!');
     }
 
-    // Função para carregar os dados salvos (se houver)
+    // Função para carregar a ficha salva (se houver)
     function carregarFicha() {
       const fichaSalva = localStorage.getItem('fichaData');
       if (fichaSalva) {
@@ -139,7 +474,18 @@
       }
     }
 
-    // Carrega os dados salvos ao carregar a página
+    // Função para gerar uma ficha aleatória (escolhe uma classe aleatoriamente e atualiza a ficha)
+    function gerarFichaAleatoria() {
+      const classes = ["saqueador", "psionico", "motorista", "tecnomago", "sobrevivente", "cultista", "mutante", "robo", "alien", "catador"];
+      const classeAleatoria = classes[Math.floor(Math.random() * classes.length)];
+      updateFichaPorClasse(classeAleatoria);
+      // Se o nome estiver vazio, define um nome padrão
+      if (!document.getElementById('nome').value) {
+        document.getElementById('nome').value = "Personagem Aleatório";
+      }
+      alert("Ficha aleatória gerada!");
+    }
+
     window.onload = carregarFicha;
   </script>
 </body>
